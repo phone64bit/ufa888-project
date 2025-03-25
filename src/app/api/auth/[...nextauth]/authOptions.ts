@@ -34,7 +34,7 @@ export const authOptions:AuthOptions = {
             session.user = token as any;
             return session;
         }
-    }
+    },
 }
 
 const handler = NextAuth(authOptions);

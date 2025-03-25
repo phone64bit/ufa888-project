@@ -3,10 +3,11 @@ import Card from '@/components/Card'
 import getHotels from '@/libs/getHotels';
 import Link from 'next/link'
 import { useEffect, useState } from 'react';
+import { HotelJson } from '../../interfaces';
 
 export default function CardPanel() {
 
-    const [items, setItems] = useState([]);
+    const [items, setItems] = useState<HotelJson|null>(null);
 
     useEffect(() => {
         const fetchItems = async () => {
@@ -26,6 +27,8 @@ export default function CardPanel() {
 
     }, []);
 
+    if(!items) return (<div></div>)
+
     return (
         <div className="mt-[9%]">
             <div className="text-3xl text-black font-bold mb-[30px]">
@@ -39,7 +42,7 @@ export default function CardPanel() {
                             <Card 
                             hotelName={item.name} 
                             imgSrc={`/img/hotel.png`} 
-                            rating={item.userRatingCount>0 ? parseFloat(item.ratingSum / item.userRatingCount).toFixed(2) : 0}
+                            rating={item.userRatingCount>0 ? parseFloat((item.ratingSum / item.userRatingCount).toFixed(2)) : 0}
                             dailyRate={item.dailyRate}/>
                         </Link>
                     )

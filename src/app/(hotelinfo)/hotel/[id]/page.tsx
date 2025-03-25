@@ -8,13 +8,14 @@ import getHotel from '@/libs/getHotel';
 import { useSession } from 'next-auth/react';
 import { ToastContainer, toast } from 'react-toastify'
 import addRating from '@/libs/addRating';
+import { HotelItem } from '../../../../../interfaces';
 
 
 export default function itemPage({params}:{params: {id: string}}) {
 
     const { data:session } = useSession();
 
-    const [item, setItem] = useState([]);
+    const [item, setItem] = useState<HotelItem|null>(null);
     const [loading, setLoading] = useState(true);
     const [rating, setRating] = useState(0);
 
@@ -38,7 +39,7 @@ export default function itemPage({params}:{params: {id: string}}) {
 
     }, []);
 
-    if(loading) return ( <div></div> )
+    if(loading || !item) return ( <div></div> )
 
     const alert = async () => {
         if(!session) {
@@ -78,7 +79,7 @@ export default function itemPage({params}:{params: {id: string}}) {
                         precision={0.5}
                         readOnly
                     />
-                    <div className="text-xl text-black">{item.data.userRatingCount>0 ? parseFloat(item.data.ratingSum / item.data.userRatingCount).toFixed(2) : 0} / 5.00 Ratings</div>
+                    <div className="text-xl text-black">{item.data.userRatingCount>0 ? (item.data.ratingSum / item.data.userRatingCount).toFixed(2) : 0} / 5.00 Ratings</div>
                     <div className="text-l text-black">{item.data.userRatingCount} User{item.data.userRatingCount>1 ? 's' : ''}</div>
                 </div>
                 <div className="w-1/3 justify-items-end">

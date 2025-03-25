@@ -10,7 +10,7 @@ import getHotel from '@/libs/getHotel'
 import { useSession } from 'next-auth/react'
 import addBooking from '@/libs/addBooking'
 import { ToastContainer, toast } from 'react-toastify'
-import { redirect } from 'next/navigation'
+import { HotelItem } from '../../../interfaces'
 
 export default function Booking() {
 
@@ -22,44 +22,51 @@ export default function Booking() {
     const [checkInDate, setCheckInDate] = useState<Dayjs|null>(null);
     const [checkOutDate, setCheckOutDate] = useState<Dayjs|null>(null);
     
-    if(!session) return ( <div></div>)
+    if(!session) return ( <div className="text-black text-xl text-center">You must Login first to view this page.</div> )
     
-    if(!id) return (
-        <div>
-            <BookingList/>
-        </div>
-    );
-
-    const [item, setItem] = useState([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchItems = async () => {
-            try {
-                const response = await getHotel(id);
-
-                if(!response) throw new Error("Failed to fetch data.");
-
-                setItem(response);
-                
-            } catch(err) {
-                console.error(err);
-            } finally {
+        const [item, setItem] = useState<HotelItem|null>(null);
+        const [loading, setLoading] = useState(true);
+        
+        useEffect(() => {
+            if(!id) {
                 setLoading(false);
+                return;
             }
-        }
-
-        fetchItems();
-
-    }, []);
-
-    if(loading) return (<div></div>)
-
+            const fetchItems = async () => {
+                try {
+                    const response = await getHotel(id);
+                    
+                    if(!response) throw new Error("Failed to fetch data.");
+                    
+                    setItem(response);
+                    
+                } catch(err) {
+                    console.error(err);
+                } finally {
+                    setLoading(false);
+                }
+            }
+            
+            fetchItems();
+            
+        }, []);
+        
+        if(!id){
+            return (
+                <div>
+                    <BookingList/>
+                </div>
+            );
+        } 
+        
+        if(loading || !item) return (<div></div>)
+            
     const makeBooking = async () => {
         if(checkInDate && session && checkOutDate) {
             const response = await addBooking(item.data._id, session.user.token, checkInDate.format("YYYY-MM-DD"), checkOutDate.format("YYYY-MM-DD"));
             if(response.success == true) {
                 toast.success("Booking Successfully.");
+                window.location.search = '';
             } else toast.error(response.message ? response.message : `An Error has occurred while booking a hotel.`);
         } else toast.error("Invalid Date or Session.");
     }

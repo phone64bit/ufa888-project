@@ -18,11 +18,22 @@ export default async function TopMenu() {
                     <TopMenuItem title="Home" pageRef='/'/>
                     <TopMenuItem title="Booking" pageRef='/booking'/>
                 </div>
-                <Link href={session ? "/api/auth/signout" : "/api/auth/signin"}>
-                    <div className="text-[14px] bg-black text-white px-[24px] py-[14px] rounded-lg hover:shadow-xl hover:bg-white hover:text-black duration-300">
-                            {session ? `Sign Out` : `Sign In`}
-                    </div>
-                </Link>
+                <div className='flex flex-row gap-2'>
+                    <Link href={session ? "/api/auth/signout" : "/api/auth/signin"}>
+                        <div className="text-[14px] bg-black text-white px-[24px] py-[14px] rounded-lg hover:shadow-xl hover:bg-white hover:text-black duration-300">
+                                {session ? `Sign Out` : `Sign In`}
+                        </div>
+                    </Link>
+                    {
+                        !session ? (
+                            <Link href={"/api/auth/signup"}>
+                                <div className="text-[14px] bg-white text-black border border-black px-[24px] py-[14px] rounded-lg hover:shadow-xl hover:bg-black hover:text-white duration-300">
+                                        Sign Up
+                                </div>
+                            </Link>
+                        ) : ""
+                    }
+                </div>
             </div>
         </div>
     )
